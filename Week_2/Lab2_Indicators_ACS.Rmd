@@ -65,13 +65,15 @@ library(kableExtra)
 options(scipen=999)
 options(tigris_class = "sf")
 
+#these are functions developed for this class, so it takes you especially to the book to get those
+
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 
 palette5 <- c("#f0f9e8","#bae4bc","#7bccc4","#43a2ca","#0868ac")
 ```
 
 ```{r load_key, warning = FALSE, eval = FALSE}
-census_api_key("YOUR KEY GOES HERE", overwrite = TRUE)
+census_api_key('bf2d507651b5a621dbadd44533fb4f3deaab26bf', overwrite = TRUE)
 ```
 
 ### Use `get_acs()` to get 2016 ACS data
@@ -166,10 +168,10 @@ B <-
 C <-
   ggplot() +
   geom_sf(data = totalPop16, aes(fill = q5(estimate))) +
-  scale_fill_manual(values = palette5,
-                    labels = qBr(totalPop16, "estimate"),
+  scale_fill_manual(values = palette5,  
+                    labels = qBr(totalPop16, "estimate"), #this is the function defined by the class instructor
                     name = "Total\nPopluation\n(Quintile Breaks)") +
-  theme(plot.title = element_text(size=22))
+  theme(plot.title = element_text(size=22)) #this is defined by fich too 
 
 D <- 
   ggplot() +
@@ -197,7 +199,7 @@ frames.
 tracts16 <- 
   tracts16 %>%
   dplyr::select( -NAME, -moe) %>%
-  spread(key = variable, value = estimate) %>%
+  spread(key = variable, value = estimate) %>% #spread makes it long to wide
   rename(TotalPop = B25026_001, 
          Whites = B02001_002,
          FemaleBachelors = B15001_050, 
@@ -314,9 +316,9 @@ septaBuffers <-
     st_buffer(septaStops, 2640) %>%
       mutate(Legend = "Buffer") %>%
       dplyr::select(Legend),
-    st_union(st_buffer(septaStops, 2640)) %>%
+    st_union(st_buffer(septaStops, 2640)) %>% #the number at the end is in feet, because our CRS is in feet
       st_sf() %>%
-      mutate(Legend = "Unioned Buffer"))
+      mutate(Legend = "Unioned Buffer")) #all st functions will be spatial related stuff
 ```
 
 Let's examine both buffers by making a "[small
@@ -473,7 +475,7 @@ selectCentroids <-
 Plotting the results of each method
 
 ```{r}
-intersections <- rbind(clip, selection1, selectCentroids)
+intersections <- rbind(clip, selection1,selectCentroids)
 
 ggplot() +
   geom_sf(data=intersections, aes(fill = TotalPop)) +
@@ -519,7 +521,7 @@ contained in "map_exercise.R"
 
 ```{r}
 allTracts.Summary <- 
-  st_drop_geometry(allTracts.group) %>%
+  st_drop_geometry(allTracts.group) %>% #best to go non spatil here because we're just making a table
   group_by(year, TOD) %>%
   summarize(Rent = mean(MedRent, na.rm = T),
             Population = mean(TotalPop, na.rm = T),
@@ -559,7 +561,7 @@ one up please) To go from wide to long Why do we do this?? Notice we can
 
 ```{r}
 allTracts.Summary %>%
-  gather(Variable, Value, -year, -TOD) %>%
+  gather(Variable, Value, -year, -TOD) %>% #pivot wide and pivot longer are other functions that do this, pivot longer is gather, pivot wide you'll have to check online, not explained in class
   ggplot(aes(year, Value, fill = TOD)) +
   geom_bar(stat = "identity", position = "dodge") +
   facet_wrap(~Variable, scales = "free", ncol=5) +
@@ -571,8 +573,8 @@ allTracts.Summary %>%
 #### Examining three submarkets
 
 ```{r}
-centerCity <-
-  st_intersection(
+centerCity <- #the places where the buffers intersect is beign called CC
+  st_intersection( 
     st_buffer(filter(septaStops, Line == "El"), 2640) %>% st_union(),
     st_buffer(filter(septaStops, Line == "Broad_St"), 2640) %>% st_union()) %>%
   st_sf() %>%
