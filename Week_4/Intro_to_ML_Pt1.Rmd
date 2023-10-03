@@ -12,6 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Load some libraries
 
+library(rlang)
 library(tidyverse)
 library(sf)
 library(spdep)
@@ -33,7 +34,7 @@ root.dir = "https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analyti
 
 source("https://raw.githubusercontent.com/urbanSpatial/Public-Policy-Analytics-Landing/master/functions.r")
 
-palette5 <- c("#25CB10", "#5AB60C", "#8FA108",   "#C48C04", "#FA7800")
+palette5 <- c("#25CB10", "#5AB60C", "#8FA108", "#C48C04", "#FA7800")
 ```
 
 # MUSA 508, Lab 4 - Spatial Machine Learning Pt. 1
@@ -348,7 +349,7 @@ reg1 <- lm(SalePrice ~ ., data = boston_sub_200k %>%
                                                R_BDRMS, R_FULL_BTH, R_HALF_BTH, 
                                                R_KITCH, R_AC, R_FPLACE))
 
-summary(reg1)
+summary_reg1 <- summary(reg1)
 ```
 
 ## Marginal Response Plots
@@ -362,6 +363,10 @@ What does the location of the blue circle relative to the center line at zero su
 ```{r effect_plots}
 ## Plot of marginal response
 effect_plot(reg1, pred = R_BDRMS, interval = TRUE, plot.points = TRUE)
+
+```
+
+```{r}
 
 ## Plot coefficients
 plot_summs(reg1, scale = TRUE)
